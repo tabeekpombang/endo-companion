@@ -1,1 +1,1 @@
-# end-companion
+# endo-companion
