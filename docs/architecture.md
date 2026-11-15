@@ -5,7 +5,9 @@
 This document describes the planned MVP architecture and the initial mobile
 shell. The repository now has a presentational Expo / React Native app with
 Home, Track, History, and Prepare tabs; it does not yet connect to a backend
-or persist health records. Detailed API contracts, deployment, and data
+or persist health records. The mobile app uses Firebase Authentication for
+email/password sign-in, but no backend token verification or per-user data
+authorization exists yet. Detailed API contracts, deployment, and data
 protection decisions still need to be made.
 
 ## Planned technology stack
@@ -42,6 +44,11 @@ The initial tab shell uses React Native components and local screen-selection
 state rather than adding a navigation library. This keeps the first increment
 small; replace it with a navigation solution when nested flows, deep links, or
 navigation state make that worthwhile.
+
+The mobile code is separated by responsibility: `App.tsx` observes auth state,
+`src/auth/` owns sign-in flows, `src/navigation/` owns tab selection,
+`src/screens/` contains tab screens, and shared UI and palette live in
+`src/components/` and `src/theme/`.
 
 ## Backend module boundaries
 
