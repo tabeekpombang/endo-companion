@@ -2,9 +2,10 @@
 
 ## Status and scope
 
-This document describes the planned MVP architecture, not implemented code.
-The repository currently contains documentation only. The technology stack
-below is the project plan; detailed API contracts, deployment, and data
+This document describes the planned MVP architecture and the initial mobile
+shell. The repository now has a presentational Expo / React Native app with
+Home, Track, History, and Prepare tabs; it does not yet connect to a backend
+or persist health records. Detailed API contracts, deployment, and data
 protection decisions still need to be made.
 
 ## Planned technology stack
@@ -36,6 +37,11 @@ React Native / Expo mobile app
 
 The API protocol and contract, authentication mechanism, and deployment model
 remain to be decided.
+
+The initial tab shell uses React Native components and local screen-selection
+state rather than adding a navigation library. This keeps the first increment
+small; replace it with a navigation solution when nested flows, deep links, or
+navigation state make that worthwhile.
 
 ## Backend module boundaries
 

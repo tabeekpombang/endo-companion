@@ -1,0 +1,17 @@
+{
+  "expo": {
+    "name": "Endo Companion",
+    "slug": "endo-companion",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": false
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#FFF9F6"
+      }
+    }
+  }
+}
