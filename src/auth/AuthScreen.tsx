@@ -16,6 +16,7 @@ import {
   signInWithEmailAndPassword,
   type User,
 } from "@firebase/auth";
+import { Ionicons } from "@expo/vector-icons";
 import { auth } from "../firebase";
 import { colors } from "../theme/colors";
 import { AuthMode, authErrorMessage } from "./authErrors";
@@ -28,6 +29,7 @@ export function AuthScreen({ onAuthenticated }: AuthScreenProps) {
   const [mode, setMode] = useState<AuthMode>("sign-in");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -80,6 +82,7 @@ export function AuthScreen({ onAuthenticated }: AuthScreenProps) {
     setError("");
     setMessage("");
     setPassword("");
+    setShowPassword(false);
     setMode(nextMode);
   };
 
@@ -105,7 +108,7 @@ export function AuthScreen({ onAuthenticated }: AuthScreenProps) {
         <Text style={styles.eyebrow}>ENDO COMPANION</Text>
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.description}>
-          A gentle space to support you through your health journey.
+          Your journey. Your story. Your space.
         </Text>
 
         <View style={styles.form}>
@@ -130,24 +133,44 @@ export function AuthScreen({ onAuthenticated }: AuthScreenProps) {
               <Text style={[styles.inputLabel, styles.passwordLabel]}>
                 Password
               </Text>
-              <TextInput
-                accessibilityLabel="Password"
-                autoCapitalize="none"
-                autoComplete={
-                  mode === "sign-up" ? "new-password" : "current-password"
-                }
-                onChangeText={setPassword}
-                onSubmitEditing={() => void submit()}
-                placeholder="At least 6 characters"
-                placeholderTextColor={colors.muted}
-                returnKeyType="done"
-                secureTextEntry
-                style={styles.input}
-                textContentType={
-                  mode === "sign-up" ? "newPassword" : "password"
-                }
-                value={password}
-              />
+              <View style={styles.passwordRow}>
+                <TextInput
+                  accessibilityLabel="Password"
+                  autoCapitalize="none"
+                  autoComplete={
+                    mode === "sign-up" ? "new-password" : "current-password"
+                  }
+                  onChangeText={setPassword}
+                  onSubmitEditing={() => void submit()}
+                  placeholder="At least 6 characters"
+                  placeholderTextColor={colors.muted}
+                  returnKeyType="done"
+                  secureTextEntry={!showPassword}
+                  style={[styles.input, styles.passwordInput]}
+                  textContentType={
+                    mode === "sign-up" ? "newPassword" : "password"
+                  }
+                  value={password}
+                />
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={showPassword ? "Hide password" : "Show password"}
+                  accessibilityState={{ selected: showPassword }}
+                  onPress={() => setShowPassword((visible) => !visible)}
+                  style={({ pressed }) => [
+                    styles.passwordToggle,
+                    pressed && styles.pressed,
+                  ]}
+                >
+                  <Ionicons
+                    accessibilityElementsHidden
+                    importantForAccessibility="no"
+                    name={showPassword ? "eye-off-outline" : "eye-outline"}
+                    size={22}
+                    color={colors.mauve}
+                  />
+                </Pressable>
+              </View>
             </>
           ) : null}
 
@@ -303,6 +326,21 @@ const styles = StyleSheet.create({
     color: colors.plum,
     fontSize: 15,
     paddingHorizontal: 16,
+  },
+  passwordRow: {
+    position: "relative",
+  },
+  passwordInput: {
+    paddingRight: 62,
+  },
+  passwordToggle: {
+    position: "absolute",
+    right: 8,
+    top: 6,
+    width: 46,
+    height: 40,
+    alignItems: "center",
+    justifyContent: "center",
   },
   error: {
     color: "#A1374B",

@@ -17,3 +17,6 @@ web-build/
 # Debug logs
 npm-debug.log*
 yarn-debug.log*
+
+# Java / Maven
+backend/target/

@@ -5,6 +5,7 @@ import { HomeScreen } from "../screens/HomeScreen";
 import { HistoryScreen } from "../screens/HistoryScreen";
 import { PrepareScreen } from "../screens/PrepareScreen";
 import { TrackScreen } from "../screens/TrackScreen";
+import type { CheckIn } from "../api/checkIns";
 
 type Tab = "Home" | "Track" | "History" | "Prepare";
 
@@ -21,7 +22,21 @@ type MainTabsProps = {
 
 export function MainTabs({ onSignOut }: MainTabsProps) {
   const [activeTab, setActiveTab] = useState<Tab>("Home");
-  const openTrack = () => setActiveTab("Track");
+  const [historyRefreshKey, setHistoryRefreshKey] = useState(0);
+  const [checkInToEdit, setCheckInToEdit] = useState<CheckIn | undefined>();
+  const openTrack = () => {
+    setCheckInToEdit(undefined);
+    setActiveTab("Track");
+  };
+  const openEdit = (checkIn: CheckIn) => {
+    setCheckInToEdit(checkIn);
+    setActiveTab("Track");
+  };
+  const onCheckInSaved = () => {
+    setCheckInToEdit(undefined);
+    setHistoryRefreshKey((current) => current + 1);
+    setActiveTab("History");
+  };
 
   return (
     <View style={styles.app}>
@@ -32,9 +47,18 @@ export function MainTabs({ onSignOut }: MainTabsProps) {
         {activeTab === "Home" ? (
           <HomeScreen onTrack={openTrack} onSignOut={onSignOut} />
         ) : activeTab === "Track" ? (
-          <TrackScreen onSignOut={onSignOut} />
+          <TrackScreen
+            onSaved={onCheckInSaved}
+            onSignOut={onSignOut}
+            checkInToEdit={checkInToEdit}
+          />
         ) : activeTab === "History" ? (
-          <HistoryScreen onTrack={openTrack} onSignOut={onSignOut} />
+          <HistoryScreen
+            onTrack={openTrack}
+            onEdit={openEdit}
+            onSignOut={onSignOut}
+            refreshKey={historyRefreshKey}
+          />
         ) : (
           <PrepareScreen onTrack={openTrack} onSignOut={onSignOut} />
         )}

@@ -67,13 +67,39 @@ kept separate so they are not treated as settled design choices.
 - **Consequences:** The designs still need to be accessible to the
   implementation workflow before screen-level decisions are made.
 
+## D-007: Use Firebase Authentication for mobile sign-in
+
+- **Status:** Accepted
+- **Context:** The mobile app needs user identity before private health records
+  can be associated with an account.
+- **Decision:** Use Firebase Authentication with email/password for the mobile
+  app. The Spring Boot backend must verify Firebase ID tokens and authorize
+  record access using the verified UID.
+- **Consequences:** Firebase Authentication does not store symptom records and
+  does not replace backend authorization. Do not store real health data until
+  token verification and owner-scoped access are implemented and tested.
+
+## D-008: Keep the first check-in small and omit cycle tracking
+
+- **Status:** Accepted
+- **Context:** A first vertical slice is needed to learn and validate the
+  mobile-to-backend-to-database flow without prematurely expanding the model.
+- **Decision:** A check-in contains an editable calendar date, required pain
+  level (0–10), required daily impact (`NOT_AT_ALL`, `A_LITTLE`, `A_LOT`),
+  selected symptoms (pelvic pain, bloating, fatigue, back pain, nausea), and
+  optional notes. Cycle information is deferred. Figma’s “More” symptom
+  choices must be defined before implementation.
+- **Consequences:** The backend will validate the agreed scale and categories;
+  symptom summaries must remain descriptive and must not imply a diagnosis.
+
 ## Open decisions
 
-- Authentication, account recovery, and onboarding approach.
-- Offline use, synchronization, and the API contract.
-- Exact symptom taxonomy, pain scale, daily-impact options, and cycle fields.
+- Additional symptom choices opened by the Figma “More” control.
+- Offline use, synchronization, API details beyond the first proposed
+  check-in endpoints, and deployment model.
+- Whether and how cycle information will be added after the first slice.
 - Educational content sources, review responsibility, and update cadence.
-- Deployment, backups, retention, encryption, and account-deletion behavior.
+- Backups, retention, encryption, and account-deletion behavior.
 - Target launch regions and applicable privacy or regulatory requirements.
 
 ## Decision record template

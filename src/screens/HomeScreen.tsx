@@ -51,7 +51,7 @@ export function HomeScreen({ onTrack, onSignOut }: HomeScreenProps) {
         </View>
       </View>
       <Text style={styles.privacyNote}>
-        Use a test account only. Health records aren’t connected yet.
+        Use fictional health details while testing the app.
       </Text>
     </>
   );

@@ -2,13 +2,12 @@
 
 ## Status and scope
 
-This document describes the planned MVP architecture and the initial mobile
-shell. The repository now has a presentational Expo / React Native app with
-Home, Track, History, and Prepare tabs; it does not yet connect to a backend
-or persist health records. The mobile app uses Firebase Authentication for
-email/password sign-in, but no backend token verification or per-user data
-authorization exists yet. Detailed API contracts, deployment, and data
-protection decisions still need to be made.
+The repository has an Expo / React Native app with Home, Track, History, and
+Prepare tabs, plus a Spring Boot API for the first check-in persistence slice.
+Track submits entries and History loads the signed-in user's records. Firebase
+Authentication provides mobile email/password sign-in; the backend verifies
+Firebase ID tokens and scopes check-in queries to the verified UID. Deployment
+and broader data-protection decisions still need to be made.
 
 ## Planned technology stack
 
@@ -37,8 +36,31 @@ React Native / Expo mobile app
          PostgreSQL
 ```
 
-The API protocol and contract, authentication mechanism, and deployment model
-remain to be decided.
+The first API uses REST endpoints described below. The deployment model
+remains to be decided.
+
+Firebase Authentication is selected for mobile email/password sign-in. The
+backend verifies Firebase ID tokens with the Firebase Admin SDK and derives
+ownership from the verified UID. Client-provided owner IDs are never trusted.
+
+## First vertical slice: check-in
+
+The first persistence feature is a check-in create/list flow:
+
+- `POST /api/v1/check-ins` validates `recordedDate`, `painLevel` (integer
+  0–10), `dailyImpact` (`NOT_AT_ALL`, `A_LITTLE`, or `A_LOT`), selected
+  `symptoms`, and optional `notes`. The owner UID comes only from the verified
+  Firebase token.
+- `GET /api/v1/check-ins` returns entries scoped to the verified Firebase UID.
+- PostgreSQL stores the entry and its selected symptom codes using a Flyway
+  migration. Cycle fields are deferred. The exact additional choices behind
+  Figma's “More” symptom control remain to be defined.
+- The mobile Track screen submits the form and History displays the
+  authenticated user's returned entries when the local API is configured.
+
+Backend tests reject missing and invalid tokens, check request validation and
+owner derivation, and verify repository results are scoped to one Firebase UID.
+The mobile app sends the current user's Firebase ID token as a bearer token.
 
 The initial tab shell uses React Native components and local screen-selection
 state rather than adding a navigation library. This keeps the first increment
@@ -60,8 +82,8 @@ These are logical areas within one backend application, not separate services:
   provide summaries derived from the user's selected history.
 - **Educational resources:** Provide reviewed educational content and its
   sources.
-- **Identity and access:** Authenticate users and authorize access to their
-  own records. The specific authentication design is unresolved.
+- **Identity and access:** Verify Firebase ID tokens and authorize access to
+  the authenticated user's own records using the verified Firebase UID.
 
 The dashboard should compose recent activity from existing feature data
 rather than introduce a separate service or duplicate health records.
